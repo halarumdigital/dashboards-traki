@@ -22,6 +22,10 @@ export default function Dashboard() {
   const [city, setCity] = useState("sao-paulo");
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("operacional");
+  
+  // Marketing filters
+  const [campaign, setCampaign] = useState("todas");
+  const [ad, setAd] = useState("todos");
 
   // Simulate data loading when filters change
   useEffect(() => {
@@ -30,7 +34,7 @@ export default function Dashboard() {
       setLoading(false);
     }, 600);
     return () => clearTimeout(timer);
-  }, [month, city]);
+  }, [month, city, campaign, ad]);
 
   const getTitle = () => {
     switch(activeTab) {
@@ -103,9 +107,39 @@ export default function Dashboard() {
             <span>Filtros:</span>
           </div>
 
+          {activeTab === "marketing" && (
+            <>
+              <Select value={campaign} onValueChange={setCampaign}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Campanha" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todas">Todas Campanhas</SelectItem>
+                  <SelectItem value="verao-2025">Verão 2025</SelectItem>
+                  <SelectItem value="volta-aulas">Volta às Aulas</SelectItem>
+                  <SelectItem value="frete-gratis">Frete Grátis</SelectItem>
+                  <SelectItem value="instalacao-app">Instalação App</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={ad} onValueChange={setAd}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Anúncio" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos Anúncios</SelectItem>
+                  <SelectItem value="ad-1">Video Promo 1</SelectItem>
+                  <SelectItem value="ad-2">Carrossel Benefícios</SelectItem>
+                  <SelectItem value="ad-3">Stories Depoimento</SelectItem>
+                  <SelectItem value="ad-4">Banner Estático</SelectItem>
+                </SelectContent>
+              </Select>
+            </>
+          )}
+
           <Select value={city} onValueChange={setCity}>
-            <SelectTrigger className="w-full md:w-[200px]">
-              <SelectValue placeholder="Selecione a Cidade" />
+            <SelectTrigger className="w-full md:w-[160px]">
+              <SelectValue placeholder="Cidade" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="sao-paulo">São Paulo</SelectItem>
@@ -116,8 +150,8 @@ export default function Dashboard() {
           </Select>
 
           <Select value={month} onValueChange={setMonth}>
-            <SelectTrigger className="w-full md:w-[180px]">
-              <SelectValue placeholder="Selecione o Mês" />
+            <SelectTrigger className="w-full md:w-[140px]">
+              <SelectValue placeholder="Mês" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="janeiro">Janeiro</SelectItem>
