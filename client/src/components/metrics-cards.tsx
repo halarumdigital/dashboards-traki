@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowDown, ArrowUp, Clock, Users, Bike } from "lucide-react";
+import { ArrowDown, ArrowUp, Clock, Users, Bike, WifiOff } from "lucide-react";
 
 interface MetricCardProps {
   title: string;
@@ -39,7 +39,7 @@ function MetricCard({ title, value, trend, trendUp, icon: Icon, description }: M
 
 export function KPIGrid() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       <MetricCard
         title="Tempo Médio de Aceite"
         value="45s"
@@ -71,6 +71,14 @@ export function KPIGrid() {
         trendUp={true}
         icon={Users}
         description="agora online"
+      />
+      <MetricCard
+        title="Entregadores Offline"
+        value="34"
+        trend="-2"
+        trendUp={false}
+        icon={WifiOff}
+        description="indisponíveis"
       />
     </div>
   );
