@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { KPIGrid } from "@/components/metrics-cards";
 import { CourierDemandChart } from "@/components/charts/delivery-chart";
 import { DeliveryStatusChart } from "@/components/charts/status-chart";
-import { NPSChart } from "@/components/charts/nps-chart";
 import { WeeklyActivityChart } from "@/components/charts/weekly-activity-chart";
-import { Bell, Search, Bike, Filter } from "lucide-react";
+import { ManagementView } from "@/components/management-view";
+import { Bell, Search, Bike, Filter, LayoutDashboard, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,12 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Dashboard() {
   const [month, setMonth] = useState("dezembro");
   const [city, setCity] = useState("sao-paulo");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("operacional");
 
   // Simulate data loading when filters change
   useEffect(() => {
@@ -42,6 +43,12 @@ export default function Dashboard() {
           FlashDelivery
         </div>
         
+        <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:block">
+          <h1 className="text-lg font-semibold text-foreground">
+            {activeTab === "operacional" ? "Dashboard Operacional" : "Dashboard de Gestão"}
+          </h1>
+        </div>
+
         <div className="flex items-center gap-4 w-full md:w-auto justify-end">
           <div className="relative w-full md:w-64 hidden md:block">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -59,14 +66,29 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Filter Bar */}
+      {/* Filter Bar & Tabs */}
       <div className="bg-card border-b px-6 py-4 flex flex-col md:flex-row gap-4 items-center justify-between sticky top-16 z-10 shadow-sm">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Filter className="h-4 w-4" />
-          <span>Filtros Globais</span>
+        <div className="flex items-center gap-4 w-full md:w-auto overflow-x-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+            <TabsList>
+              <TabsTrigger value="operacional" className="flex items-center gap-2">
+                <LayoutDashboard className="h-4 w-4" />
+                Operacional
+              </TabsTrigger>
+              <TabsTrigger value="gestao" className="flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Gestão
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
         
-        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto items-center">
+           <div className="flex items-center gap-2 text-sm text-muted-foreground mr-2 hidden md:flex">
+            <Filter className="h-4 w-4" />
+            <span>Filtros:</span>
+          </div>
+
           <Select value={city} onValueChange={setCity}>
             <SelectTrigger className="w-full md:w-[200px]">
               <SelectValue placeholder="Selecione a Cidade" />
@@ -126,27 +148,29 @@ export default function Dashboard() {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              <KPIGrid />
+              {activeTab === "operacional" ? (
+                <div className="space-y-6">
+                  <KPIGrid />
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="col-span-4 lg:col-span-2">
-                  <CourierDemandChart />
-                </div>
-                
-                <div className="col-span-4 lg:col-span-1">
-                  <DeliveryStatusChart />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="col-span-3 lg:col-span-2">
+                      <CourierDemandChart />
+                    </div>
+                    
+                    <div className="col-span-3 lg:col-span-1">
+                      <DeliveryStatusChart />
+                    </div>
+                  </div>
 
-                <div className="col-span-4 lg:col-span-1">
-                  <NPSChart />
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="col-span-4">
+                      <WeeklyActivityChart />
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="col-span-4">
-                  <WeeklyActivityChart />
-                </div>
-              </div>
+              ) : (
+                <ManagementView />
+              )}
             </motion.div>
           )}
         </AnimatePresence>
