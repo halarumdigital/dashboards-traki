@@ -4,7 +4,8 @@ import { CourierDemandChart } from "@/components/charts/delivery-chart";
 import { DeliveryStatusChart } from "@/components/charts/status-chart";
 import { WeeklyActivityChart } from "@/components/charts/weekly-activity-chart";
 import { ManagementView } from "@/components/management-view";
-import { Bell, Search, Bike, Filter, LayoutDashboard, TrendingUp } from "lucide-react";
+import { MarketingView } from "@/components/marketing-view";
+import { Bell, Search, Bike, Filter, LayoutDashboard, TrendingUp, Megaphone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -31,6 +32,15 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [month, city]);
 
+  const getTitle = () => {
+    switch(activeTab) {
+      case "operacional": return "Dashboard Operacional";
+      case "gestao": return "Dashboard de Gestão";
+      case "marketing": return "Dashboard de Marketing";
+      default: return "Dashboard";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       
@@ -45,7 +55,7 @@ export default function Dashboard() {
         
         <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:block">
           <h1 className="text-lg font-semibold text-foreground">
-            {activeTab === "operacional" ? "Dashboard Operacional" : "Dashboard de Gestão"}
+            {getTitle()}
           </h1>
         </div>
 
@@ -78,6 +88,10 @@ export default function Dashboard() {
               <TabsTrigger value="gestao" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
                 Gestão
+              </TabsTrigger>
+              <TabsTrigger value="marketing" className="flex items-center gap-2">
+                <Megaphone className="h-4 w-4" />
+                Marketing
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -148,7 +162,7 @@ export default function Dashboard() {
               transition={{ duration: 0.3 }}
               className="space-y-6"
             >
-              {activeTab === "operacional" ? (
+              {activeTab === "operacional" && (
                 <div className="space-y-6">
                   <KPIGrid />
 
@@ -168,9 +182,11 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
-              ) : (
-                <ManagementView />
               )}
+              
+              {activeTab === "gestao" && <ManagementView />}
+              
+              {activeTab === "marketing" && <MarketingView />}
             </motion.div>
           )}
         </AnimatePresence>
