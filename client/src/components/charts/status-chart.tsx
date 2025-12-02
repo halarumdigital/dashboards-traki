@@ -33,7 +33,7 @@ export function DeliveryStatusChart({ data, isLoading }: DeliveryStatusChartProp
           <CardDescription>Carregando...</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] w-full flex items-center justify-center">
+          <div className="h-[350px] w-full flex items-center justify-center">
             <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         </CardContent>
@@ -45,10 +45,10 @@ export function DeliveryStatusChart({ data, isLoading }: DeliveryStatusChartProp
     <Card className="col-span-4 lg:col-span-1">
       <CardHeader>
         <CardTitle>Status das Entregas</CardTitle>
-        <CardDescription>Taxa de cancelamento: {cancelledPercentage}%</CardDescription>
+        <CardDescription>Média últimos 15 min • Cancelamento: {cancelledPercentage}%</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full relative">
+        <div className="h-[350px] w-full relative">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

@@ -22,7 +22,7 @@ export function WeeklyActivityChart({ data, isLoading }: WeeklyActivityChartProp
           <CardDescription>Relação semanal de atividade</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] w-full flex items-center justify-center">
+          <div className="h-[350px] w-full flex items-center justify-center">
             <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         </CardContent>
@@ -34,10 +34,10 @@ export function WeeklyActivityChart({ data, isLoading }: WeeklyActivityChartProp
     <Card className="col-span-4 md:col-span-2 lg:col-span-2">
       <CardHeader>
         <CardTitle>Empresas Ativas & Volume de Entregas</CardTitle>
-        <CardDescription>Relação semanal de atividade</CardDescription>
+        <CardDescription>Média últimos 15 min por dia da semana</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="h-[300px] w-full">
+        <div className="h-[350px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />

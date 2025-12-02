@@ -32,7 +32,7 @@ export function CourierDemandChart({ data, isLoading }: CourierDemandChartProps)
           </CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
-          <div className="h-[300px] w-full flex items-center justify-center">
+          <div className="h-[350px] w-full flex items-center justify-center">
             <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         </CardContent>
@@ -45,11 +45,11 @@ export function CourierDemandChart({ data, isLoading }: CourierDemandChartProps)
       <CardHeader>
         <CardTitle>Demanda vs. Disponibilidade</CardTitle>
         <CardDescription>
-          Pedidos em aberto por hora (últimas 16 horas)
+          Média de pedidos em aberto por hora (últimos 15 min)
         </CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
-        <div className="h-[300px] w-full">
+        <div className="h-[350px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>

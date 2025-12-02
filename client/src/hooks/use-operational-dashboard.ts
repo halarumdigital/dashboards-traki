@@ -13,35 +13,37 @@ export interface OperationalDashboardData {
     inicio: string;
     fim: string;
     cidade: string | null;
+    intervalo: string; // "15min" - indica que são médias dos últimos 15 minutos
   };
   metricas: {
     tempoMedioAceite: {
       valor: number;
       unidade: string;
-      variacao: number;
+      mediaUltimos15min: number;
     };
     tempoAteColeta: {
       valor: number;
       unidade: string;
-      variacao: number;
+      mediaUltimos15min: number;
     };
     tempoTotalEntrega: {
       valor: number;
       unidade: string;
-      variacao: number;
+      mediaUltimos15min: number;
     };
     entregadoresAtivos: {
       valor: number;
-      descricao: string;
+      mediaUltimos15min: number;
     };
     entregadoresOffline: {
       valor: number;
-      descricao: string;
+      mediaUltimos15min: number;
     };
   };
   demandaDisponibilidade: Array<{
     hora: string;
     pedidosEmAberto: number;
+    mediaUltimos15min: number;
   }>;
   statusEntregas: {
     emAberto: number;
@@ -50,11 +52,21 @@ export interface OperationalDashboardData {
     concluidas: number;
     total: number;
     taxaCancelamento: number;
+    mediaUltimos15min: {
+      emAberto: number;
+      emAndamento: number;
+      canceladas: number;
+      concluidas: number;
+    };
   };
   empresasVolume: Array<{
     diaSemana: string;
     empresasAtivas: number;
     totalEntregas: number;
+    mediaUltimos15min: {
+      empresasAtivas: number;
+      totalEntregas: number;
+    };
   }>;
 }
 

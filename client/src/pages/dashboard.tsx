@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useOperationalDashboard, useCities } from "@/hooks/use-operational-dashboard";
+import { useWeather } from "@/hooks/use-weather";
 
 // Mapeamento de meses para formato YYYY-MM
 const monthMapping: Record<string, string> = {
@@ -74,6 +75,19 @@ export default function Dashboard() {
 
   // Buscar lista de cidades
   const { data: cities } = useCities();
+
+  // Obter nome da cidade selecionada para o clima
+  const selectedCityName = useMemo(() => {
+    if (!city || city === "todas") return undefined;
+    const selectedCity = cities?.find((c) => c.id === city);
+    return selectedCity ? `${selectedCity.name}, ${selectedCity.state}` : undefined;
+  }, [city, cities]);
+
+  // Buscar dados do clima para a cidade selecionada
+  const { data: weatherData, isLoading: isWeatherLoading, error: weatherError } = useWeather({
+    cityName: selectedCityName,
+    enabled: !!selectedCityName,
+  });
 
   const getTitle = () => {
     switch(activeTab) {
@@ -226,7 +240,14 @@ export default function Dashboard() {
                   </div>
                 )}
 
-                <KPIGrid data={operationalData?.metricas} isLoading={isLoading} />
+                <KPIGrid
+                  data={operationalData?.metricas}
+                  isLoading={isLoading}
+                  weatherData={weatherData}
+                  isWeatherLoading={isWeatherLoading}
+                  cityName={selectedCityName}
+                  weatherError={weatherError}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="col-span-3 lg:col-span-2">
