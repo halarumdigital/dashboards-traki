@@ -5,8 +5,7 @@ import { DeliveryStatusChart } from "@/components/charts/status-chart";
 import { WeeklyActivityChart } from "@/components/charts/weekly-activity-chart";
 import { ManagementView } from "@/components/management-view";
 import { MarketingView } from "@/components/marketing-view";
-import { Bell, Search, Bike, Filter, LayoutDashboard, TrendingUp, Megaphone } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Bell, Bike, Filter, LayoutDashboard, TrendingUp, Megaphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Select,
@@ -54,7 +53,7 @@ export default function Dashboard() {
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
             <Bike className="h-5 w-5" />
           </div>
-          FlashDelivery
+          Traki Logística
         </div>
         
         <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:block">
@@ -63,12 +62,7 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-          <div className="relative w-full md:w-64 hidden md:block">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar entregas, empresas..." className="pl-8 bg-background" />
-          </div>
-          
+        <div className="flex items-center gap-4">
           <button className="p-2 rounded-full hover:bg-accent transition-colors relative">
             <Bell className="h-5 w-5 text-muted-foreground" />
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary"></span>

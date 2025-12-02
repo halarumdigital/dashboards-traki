@@ -30,7 +30,7 @@ export function DashboardSidebar() {
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
             <Bike className="h-5 w-5" />
           </div>
-          FlashDelivery
+          Traki Logística
         </div>
       </div>
 
