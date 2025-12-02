@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowDown, ArrowUp, Clock, Users, Bike, WifiOff } from "lucide-react";
+import type { OperationalDashboardData } from "@/hooks/use-operational-dashboard";
 
 interface MetricCardProps {
   title: string;
@@ -37,48 +38,74 @@ function MetricCard({ title, value, trend, trendUp, icon: Icon, description }: M
   );
 }
 
-export function KPIGrid() {
+interface KPIGridProps {
+  data?: OperationalDashboardData["metricas"];
+  isLoading?: boolean;
+}
+
+export function KPIGrid({ data, isLoading }: KPIGridProps) {
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {[...Array(5)].map((_, i) => (
+          <Card key={i} className="hover:shadow-md transition-all animate-pulse">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div className="h-4 w-24 bg-muted rounded" />
+              <div className="h-4 w-4 bg-muted rounded" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 w-16 bg-muted rounded mb-2" />
+              <div className="h-3 w-20 bg-muted rounded" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  const formatTimeValue = (valor: number, unidade: string) => {
+    if (unidade === "segundos") return `${valor}s`;
+    if (unidade === "minutos") return `${valor}m`;
+    return `${valor}`;
+  };
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       <MetricCard
         title="Tempo Médio de Aceite"
-        value="45s"
-        trend="12%"
-        trendUp={true}
+        value={data ? formatTimeValue(data.tempoMedioAceite.valor, data.tempoMedioAceite.unidade) : "--"}
+        trend={data ? `${Math.abs(data.tempoMedioAceite.variacao)}%` : undefined}
+        trendUp={data ? data.tempoMedioAceite.variacao < 0 : undefined}
         icon={Clock}
         description="vs mês anterior"
       />
       <MetricCard
         title="Tempo até Coleta"
-        value="12m"
-        trend="2%"
-        trendUp={false}
+        value={data ? formatTimeValue(data.tempoAteColeta.valor, data.tempoAteColeta.unidade) : "--"}
+        trend={data ? `${Math.abs(data.tempoAteColeta.variacao)}%` : undefined}
+        trendUp={data ? data.tempoAteColeta.variacao < 0 : undefined}
         icon={Bike}
         description="vs mês anterior"
       />
       <MetricCard
         title="Tempo Total de Entrega"
-        value="28m"
-        trend="5%"
-        trendUp={true}
+        value={data ? formatTimeValue(data.tempoTotalEntrega.valor, data.tempoTotalEntrega.unidade) : "--"}
+        trend={data ? `${Math.abs(data.tempoTotalEntrega.variacao)}%` : undefined}
+        trendUp={data ? data.tempoTotalEntrega.variacao < 0 : undefined}
         icon={Clock}
         description="vs mês anterior"
       />
       <MetricCard
         title="Entregadores Ativos"
-        value="142"
-        trend="+8"
-        trendUp={true}
+        value={data ? `${data.entregadoresAtivos.valor}` : "--"}
         icon={Users}
-        description="agora online"
+        description={data?.entregadoresAtivos.descricao || "agora online"}
       />
       <MetricCard
         title="Entregadores Offline"
-        value="34"
-        trend="-2"
-        trendUp={false}
+        value={data ? `${data.entregadoresOffline.valor}` : "--"}
         icon={WifiOff}
-        description="indisponíveis"
+        description={data?.entregadoresOffline.descricao || "indisponíveis"}
       />
     </div>
   );

@@ -1,21 +1,45 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-
-const data = [
-  { name: "Finalizadas", value: 850 },
-  { name: "Canceladas", value: 45 },
-  { name: "Não Finalizadas", value: 25 },
-];
+import type { OperationalDashboardData } from "@/hooks/use-operational-dashboard";
 
 const COLORS = [
-  "hsl(var(--chart-1))", // Blue
-  "hsl(var(--destructive))", // Red
-  "hsl(var(--chart-4))", // Yellow
+  "hsl(var(--chart-1))", // Blue - Concluídas
+  "hsl(var(--destructive))", // Red - Canceladas
+  "hsl(var(--chart-4))", // Yellow - Em Aberto
+  "hsl(var(--chart-2))", // Green - Em Andamento
 ];
 
-export function DeliveryStatusChart() {
-  const total = data.reduce((acc, item) => acc + item.value, 0);
-  const cancelledPercentage = ((data[1].value / total) * 100).toFixed(1);
+interface DeliveryStatusChartProps {
+  data?: OperationalDashboardData["statusEntregas"];
+  isLoading?: boolean;
+}
+
+export function DeliveryStatusChart({ data, isLoading }: DeliveryStatusChartProps) {
+  const chartData = data ? [
+    { name: "Concluídas", value: data.concluidas },
+    { name: "Canceladas", value: data.canceladas },
+    { name: "Em Aberto", value: data.emAberto },
+    { name: "Em Andamento", value: data.emAndamento },
+  ] : [];
+
+  const total = data?.total || 0;
+  const cancelledPercentage = data?.taxaCancelamento?.toFixed(1) || "0.0";
+
+  if (isLoading) {
+    return (
+      <Card className="col-span-4 lg:col-span-1">
+        <CardHeader>
+          <CardTitle>Status das Entregas</CardTitle>
+          <CardDescription>Carregando...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] w-full flex items-center justify-center">
+            <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="col-span-4 lg:col-span-1">
@@ -28,7 +52,7 @@ export function DeliveryStatusChart() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -37,13 +61,13 @@ export function DeliveryStatusChart() {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {data.map((entry, index) => (
+                {chartData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip 
-                 contentStyle={{ 
-                  backgroundColor: "hsl(var(--card))", 
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "hsl(var(--card))",
                   borderColor: "hsl(var(--border))",
                   borderRadius: "8px"
                 }}

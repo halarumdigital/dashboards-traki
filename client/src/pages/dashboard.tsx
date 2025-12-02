@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { KPIGrid } from "@/components/metrics-cards";
 import { CourierDemandChart } from "@/components/charts/delivery-chart";
 import { DeliveryStatusChart } from "@/components/charts/status-chart";
@@ -14,26 +14,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useOperationalDashboard, useCities } from "@/hooks/use-operational-dashboard";
+
+// Mapeamento de meses para formato YYYY-MM
+const monthMapping: Record<string, string> = {
+  "janeiro": "01",
+  "fevereiro": "02",
+  "marco": "03",
+  "abril": "04",
+  "maio": "05",
+  "junho": "06",
+  "julho": "07",
+  "agosto": "08",
+  "setembro": "09",
+  "outubro": "10",
+  "novembro": "11",
+  "dezembro": "12",
+};
+
+// Obter mês atual como padrão
+const getCurrentMonth = () => {
+  const now = new Date();
+  const monthNames = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho",
+                      "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  return monthNames[now.getMonth()];
+};
+
+const getCurrentYear = () => {
+  return new Date().getFullYear();
+};
 
 export default function Dashboard() {
-  const [month, setMonth] = useState("dezembro");
-  const [city, setCity] = useState("sao-paulo");
-  const [loading, setLoading] = useState(false);
+  const [month, setMonth] = useState(getCurrentMonth());
+  const [city, setCity] = useState("");
   const [activeTab, setActiveTab] = useState("operacional");
-  
+
   // Marketing filters
   const [campaign, setCampaign] = useState("todas");
   const [ad, setAd] = useState("todos");
 
-  // Simulate data loading when filters change
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [month, city, campaign, ad]);
+  // Converter filtros para formato da API
+  const apiParams = useMemo(() => {
+    const params: { month?: string; city?: string } = {};
+
+    if (month && monthMapping[month]) {
+      params.month = `${getCurrentYear()}-${monthMapping[month]}`;
+    }
+
+    if (city && city !== "todas") {
+      params.city = city;
+    }
+
+    return params;
+  }, [month, city]);
+
+  // Buscar dados da API operacional
+  const { data: operationalData, isLoading, error } = useOperationalDashboard(apiParams);
+
+  // Buscar lista de cidades
+  const { data: cities } = useCities();
 
   const getTitle = () => {
     switch(activeTab) {
@@ -132,14 +172,16 @@ export default function Dashboard() {
           )}
 
           <Select value={city} onValueChange={setCity}>
-            <SelectTrigger className="w-full md:w-[160px]">
-              <SelectValue placeholder="Cidade" />
+            <SelectTrigger className="w-full md:w-[180px]">
+              <SelectValue placeholder="Todas Cidades" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="sao-paulo">São Paulo</SelectItem>
-              <SelectItem value="rio-de-janeiro">Rio de Janeiro</SelectItem>
-              <SelectItem value="belo-horizonte">Belo Horizonte</SelectItem>
-              <SelectItem value="curitiba">Curitiba</SelectItem>
+              <SelectItem value="todas">Todas Cidades</SelectItem>
+              {cities?.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name} - {c.state}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
@@ -168,55 +210,46 @@ export default function Dashboard() {
       {/* Content */}
       <main className="flex-1 p-6 space-y-6 container mx-auto max-w-7xl">
         <AnimatePresence mode="wait">
-          {loading ? (
-             <motion.div 
-              key="loader"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-[600px] flex items-center justify-center"
-            >
-              <div className="flex flex-col items-center gap-4">
-                <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-muted-foreground animate-pulse">Atualizando dados...</p>
-              </div>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="content"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
-            >
-              {activeTab === "operacional" && (
-                <div className="space-y-6">
-                  <KPIGrid />
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            {activeTab === "operacional" && (
+              <div className="space-y-6">
+                {error && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 text-destructive">
+                    Erro ao carregar dados: {error.message}
+                  </div>
+                )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="col-span-3 lg:col-span-2">
-                      <CourierDemandChart />
-                    </div>
-                    
-                    <div className="col-span-3 lg:col-span-1">
-                      <DeliveryStatusChart />
-                    </div>
+                <KPIGrid data={operationalData?.metricas} isLoading={isLoading} />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="col-span-3 lg:col-span-2">
+                    <CourierDemandChart data={operationalData?.demandaDisponibilidade} isLoading={isLoading} />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="col-span-4">
-                      <WeeklyActivityChart />
-                    </div>
+                  <div className="col-span-3 lg:col-span-1">
+                    <DeliveryStatusChart data={operationalData?.statusEntregas} isLoading={isLoading} />
                   </div>
                 </div>
-              )}
-              
-              {activeTab === "gestao" && <ManagementView />}
-              
-              {activeTab === "marketing" && <MarketingView />}
-            </motion.div>
-          )}
+
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="col-span-4">
+                    <WeeklyActivityChart data={operationalData?.empresasVolume} isLoading={isLoading} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "gestao" && <ManagementView />}
+
+            {activeTab === "marketing" && <MarketingView />}
+          </motion.div>
         </AnimatePresence>
       </main>
     </div>
